@@ -1,10 +1,7 @@
-from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, executor, types
-import os
+from settings import config
 
-load_dotenv()
-
-bot = Bot(os.getenv("TOKEN"))
+bot = Bot(config.bot_token.get_secret_value())
 dp = Dispatcher(bot)
 
 

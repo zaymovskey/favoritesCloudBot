@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import List
+from settings import config
 
 from dotenv import load_dotenv
 from sqlalchemy import (
@@ -11,12 +12,9 @@ from sqlalchemy import (
     String,
     ForeignKey,
 )
-import os
 from sqlalchemy.orm import declarative_base, Mapped, relationship, mapped_column
 
-load_dotenv()
-
-engine = create_engine(os.getenv("DATABASE_URL"), echo=True)
+engine = create_engine(config.database_url, echo=True)
 Base = declarative_base()
 
 
