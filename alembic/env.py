@@ -1,12 +1,12 @@
+# ---------------- added code here -------------------------#
+import os
+import sys
 from logging.config import fileConfig
 
+from alembic import context
+from dotenv import load_dotenv
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-from alembic import context
-
-# ---------------- added code here -------------------------#
-import os, sys
-from dotenv import load_dotenv
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
