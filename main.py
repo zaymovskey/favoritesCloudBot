@@ -1,6 +1,4 @@
 from aiogram import executor
-
-
 from routers import dp
 
 
