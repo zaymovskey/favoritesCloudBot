@@ -1,7 +1,7 @@
 from aiogram import executor
 
 
-from handlers import dp
+from routers import dp
 
 
 if __name__ == "__main__":
