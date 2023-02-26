@@ -1,9 +1,9 @@
 from datetime import datetime
 from typing import List
-from settings import config
+
+from database import Base
 
 from sqlalchemy import (
-    create_engine,
     Integer,
     func,
     DateTime,
@@ -13,10 +13,12 @@ from sqlalchemy import (
     BigInteger,
     UniqueConstraint,
 )
-from sqlalchemy.orm import declarative_base, Mapped, relationship, mapped_column
-
-engine = create_engine(config.database_url, echo=True)
-Base = declarative_base()
+from sqlalchemy.orm import (
+    Mapped,
+    relationship,
+    mapped_column,
+    backref,
+)
 
 
 class User(Base):
@@ -24,7 +26,9 @@ class User(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(BigInteger, unique=True)
     current_menu: Mapped[List[str]] = mapped_column(
-        "current_menu", Enum("add_folder", name="menu_enum", create_type=False)
+        "current_menu",
+        Enum("add_folder", name="menu_enum", create_type=False),
+        nullable=True,
     )
 
     folders: Mapped[List["Folder"]] = relationship(back_populates="user")
@@ -39,23 +43,22 @@ class Folder(Base):
     __tablename__ = "folder"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(255))
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.user_id"))
 
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.user_id"))
     user: Mapped["User"] = relationship(back_populates="folders")
+
     files: Mapped[List["File"]] = relationship(back_populates="folder")
 
     time_created: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
 
+    parent_id = mapped_column(Integer, ForeignKey("folder.id"))
+    children = relationship("Folder", backref=backref("parent", remote_side=[id]))
+
     __table_args__ = (
         UniqueConstraint("user_id", "parent_id", "name", name="folders_unique"),
     )
-
-    parent_id: Mapped[int] = mapped_column(ForeignKey("folder.id"))
-    parent: Mapped["Folder"] = relationship(back_populates="parent")
-
-    children: Mapped[List["Folder"]] = relationship(back_populates="children")
 
 
 class File(Base):
@@ -76,7 +79,7 @@ class File(Base):
     )
 
     user_id: Mapped[int] = mapped_column(ForeignKey("user.user_id"))
-    user: Mapped["User"] = relationship(back_populates="folders")
+    user: Mapped["User"] = relationship(back_populates="files")
 
     folder_id: Mapped[int] = mapped_column(ForeignKey("folder.id"))
     folder: Mapped["Folder"] = relationship(back_populates="files")

@@ -1,8 +1,8 @@
 """tables
 
-Revision ID: 7773730c14a7
+Revision ID: b9ec598ac65f
 Revises: 
-Create Date: 2023-02-26 15:27:04.453850
+Create Date: 2023-02-26 16:09:27.843251
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '7773730c14a7'
+revision = 'b9ec598ac65f'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -21,7 +21,7 @@ def upgrade() -> None:
     op.create_table('user',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.BigInteger(), nullable=False),
-    sa.Column('current_menu', sa.Enum('add_folder', name='menu_enum'), nullable=False),
+    sa.Column('current_menu', sa.Enum('add_folder', name='menu_enum'), nullable=True),
     sa.Column('time_created', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('user_id')
@@ -31,7 +31,7 @@ def upgrade() -> None:
     sa.Column('name', sa.String(length=255), nullable=False),
     sa.Column('user_id', sa.BigInteger(), nullable=False),
     sa.Column('time_created', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.Column('parent_id', sa.Integer(), nullable=False),
+    sa.Column('parent_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['parent_id'], ['folder.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.user_id'], ),
     sa.PrimaryKeyConstraint('id'),
