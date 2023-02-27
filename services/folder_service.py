@@ -22,9 +22,9 @@ class FolderService:
             Folder.user_id == user_id
         )
         user_folders = self.session.execute(stmt)
-        path_array = self.create_path(user_folders, folder_id).split("/")
-        """ Переписать, чтобы не надо было вот эту хуйню с remove писать """
-        path_array.remove("")
+        path_array = list(
+            filter(None, self.create_folder_path(user_folders, folder_id).split("/"))
+        )
         path_array.reverse()
         path = "/".join([str(folder) for folder in path_array])
         path = path if path else "/"
@@ -57,16 +57,16 @@ class FolderService:
         except NoResultFound:
             pass
 
-    def create_path(
+    def create_folder_path(
         self, user_folders: ChunkedIteratorResult, folder_id: int | None
     ) -> str:
-        """Создание пути в виде списка имен папок на основе всех папок пользователя"""
+        """Создание пути до папки на основе всех папок пользователя"""
 
         path = "/"
         for folder in user_folders:
             if folder[0] == folder_id:
                 path = path + folder[2]
-                path = path + self.create_path(user_folders, folder[1])
+                path = path + self.create_folder_path(user_folders, folder[1])
         return path
 
     def create_user_folders_kb(self, folders: InstrumentedList) -> list:
