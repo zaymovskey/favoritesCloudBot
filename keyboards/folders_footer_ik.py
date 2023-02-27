@@ -4,7 +4,7 @@ from aiogram.types import InlineKeyboardButton
 def get_folders_footer_ik(back_callback_data: str) -> list:
     folders_footer_ik = [
         [
-            InlineKeyboardButton(text="Создать папку", callback_data="fdsaf"),
+            InlineKeyboardButton(text="Создать папку", callback_data="create_folder"),
             InlineKeyboardButton(text="Назад", callback_data=back_callback_data),
         ],
         [

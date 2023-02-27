@@ -1,6 +1,6 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.callback_data import CallbackData
-from sqlalchemy import and_, select, ChunkedIteratorResult
+from sqlalchemy import and_, select, ChunkedIteratorResult, insert
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm.collections import InstrumentedList
 
@@ -14,6 +14,13 @@ class FolderService:
 
     def __init__(self):
         self.session = session
+
+    def add_folder(self, user_id: int, folder_name: str) -> None:
+        """Добавление папки"""
+
+        new_folder = Folder(user_id=user_id, name=folder_name)
+        self.session.add(new_folder)
+        self.session.commit()
 
     def get_folder_path(self, user_id: int, folder_id: int = None) -> str:
         """Получение пути до папки"""
