@@ -1,8 +1,7 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.callback_data import CallbackData
-from sqlalchemy import and_, select, ChunkedIteratorResult
+from sqlalchemy import and_, select
 from sqlalchemy.exc import NoResultFound
-from sqlalchemy.orm.collections import InstrumentedList
 
 from database import session
 from keyboards.folders_footer_ik import get_folders_footer_ik
@@ -28,7 +27,7 @@ class FolderService:
         stmt = select(Folder.id, Folder.parent_id, Folder.name).where(
             Folder.user_id == user_id
         )
-        user_folders = self.session.execute(stmt)
+        user_folders = self.session.execute(stmt).fetchall()
         path_array = self.create_folder_path(user_folders, folder_id).split("/")
         """ Переписать, чтобы не надо было вот эту хуйню с remove писать """
         path_array.remove("")
@@ -42,11 +41,11 @@ class FolderService:
     ) -> InlineKeyboardMarkup:
         """Получение инлайн-кнопок с папками"""
 
-        stmt = self.session.query(Folder).where(
+        stmt = select(Folder.id, Folder.name, Folder.parent_id).where(
             and_(Folder.user_id == user_id, Folder.parent_id == folder_id)
         )
         try:
-            folders = self.session.scalars(stmt)
+            folders = self.session.execute(stmt).fetchall()
             user_folders_kb = self.create_user_folders_kb(folders)
             user_folders_kb.extend(
                 get_folders_footer_ik(
@@ -70,18 +69,18 @@ class FolderService:
             pass
 
     def create_folder_path(
-        self, user_folders: ChunkedIteratorResult, folder_id: int | None
+        self, user_folders: list[Folder], folder_id: int | None
     ) -> str:
         """Создание пути до папки на основе всех папок пользователя"""
 
         path = "/"
         for folder in user_folders:
-            if folder[0] == folder_id:
-                path = path + folder[2]
-                path = path + self.create_folder_path(user_folders, folder[1])
+            if folder.id == folder_id:
+                path = path + folder.name
+                path = path + self.create_folder_path(user_folders, folder.parent_id)
         return path
 
-    def create_user_folders_kb(self, folders: InstrumentedList) -> list:
+    def create_user_folders_kb(self, folders: list[Folder]) -> list:
         """Генерация сетки инлайн-кнопок папок"""
 
         folders_kb = []
