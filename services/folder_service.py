@@ -29,9 +29,9 @@ class FolderService:
             Folder.user_id == user_id
         )
         user_folders = self.session.execute(stmt)
-        path_array = list(
-            filter(None, self.create_folder_path(user_folders, folder_id).split("/"))
-        )
+        path_array = self.create_folder_path(user_folders, folder_id).split("/")
+        """ Переписать, чтобы не надо было вот эту хуйню с remove писать """
+        path_array.remove("")
         path_array.reverse()
         path = "/".join([str(folder) for folder in path_array])
         path = path if path else "/"
