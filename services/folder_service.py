@@ -1,6 +1,6 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.callback_data import CallbackData
-from sqlalchemy import and_, select, ChunkedIteratorResult, insert
+from sqlalchemy import and_, select, ChunkedIteratorResult
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm.collections import InstrumentedList
 
@@ -15,10 +15,10 @@ class FolderService:
     def __init__(self):
         self.session = session
 
-    def add_folder(self, user_id: int, folder_name: str) -> None:
+    def add_folder(self, user_id: int, folder_name: str, parent_id: int = None) -> None:
         """Добавление папки"""
 
-        new_folder = Folder(user_id=user_id, name=folder_name)
+        new_folder = Folder(user_id=user_id, name=folder_name, parent_id=parent_id)
         self.session.add(new_folder)
         self.session.commit()
 
@@ -50,11 +50,16 @@ class FolderService:
             user_folders_kb = self.create_user_folders_kb(folders)
             user_folders_kb.extend(
                 get_folders_footer_ik(
-                    self.FOLDER_CB.new(
+                    back_callback_data=self.FOLDER_CB.new(
                         action="to_folder",
                         folder_id=str(parent_id),
                         parent_id="None",
-                    )
+                    ),
+                    add_folder_callback_data=self.FOLDER_CB.new(
+                        action="add_folder",
+                        folder_id="None",
+                        parent_id=str(folder_id),
+                    ),
                 )
             )
             user_folders_kb = InlineKeyboardMarkup(
