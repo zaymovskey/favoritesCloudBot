@@ -28,7 +28,7 @@ class FolderService:
 
         stmt = select(Folder.id, Folder.parent_id, Folder.name).where(
             Folder.user_id == user_id
-        ).order_by(Folder.name)
+        )
         user_folders = self.session.execute(stmt).fetchall()
         path_array = self.create_folder_path(user_folders, folder_id).split("/")
         """ Переписать, чтобы не надо было вот эту хуйню с remove писать """
@@ -45,7 +45,7 @@ class FolderService:
 
         stmt = select(Folder.id, Folder.name, Folder.parent_id).where(
             and_(Folder.user_id == user_id, Folder.parent_id == folder_id)
-        )
+        ).order_by(Folder.name)
         try:
             folders = self.session.execute(stmt).fetchall()
             user_folders_kb = self.create_user_folders_kb(folders)
