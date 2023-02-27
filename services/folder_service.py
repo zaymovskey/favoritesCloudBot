@@ -11,6 +11,8 @@ from models import Folder
 class FolderService:
     FOLDER_CB = CallbackData("folder", "action", "folder_id", "parent_id")
 
+    FOLDERS_KEYBOARD_WIDTH = 4
+
     def __init__(self):
         self.session = session
 
@@ -95,7 +97,7 @@ class FolderService:
                 ),
             )
             row.append(button)
-            if len(row) == 4:
+            if len(row) == self.FOLDERS_KEYBOARD_WIDTH:
                 folders_kb.append(row.copy())
                 row.clear()
         folders_kb.append(row)
