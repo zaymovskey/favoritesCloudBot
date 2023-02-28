@@ -31,7 +31,6 @@ class FolderService:
         )
         user_folders = self.session.execute(stmt).fetchall()
         path_array = self.create_folder_path(user_folders, folder_id).split("/")
-        """ Переписать, чтобы не надо было вот эту хуйню с remove писать """
         path_array.remove("")
         path_array.reverse()
         path = "/".join([str(folder) for folder in path_array])
@@ -43,9 +42,11 @@ class FolderService:
     ) -> InlineKeyboardMarkup:
         """Получение инлайн-кнопок с папками"""
 
-        stmt = select(Folder.id, Folder.name, Folder.parent_id).where(
-            and_(Folder.user_id == user_id, Folder.parent_id == folder_id)
-        ).order_by(Folder.name)
+        stmt = (
+            select(Folder.id, Folder.name, Folder.parent_id)
+            .where(and_(Folder.user_id == user_id, Folder.parent_id == folder_id))
+            .order_by(Folder.name)
+        )
         try:
             folders = self.session.execute(stmt).fetchall()
             user_folders_kb = self.create_user_folders_kb(folders)
@@ -89,7 +90,7 @@ class FolderService:
         row = []
         for folder in folders:
             button = InlineKeyboardButton(
-                text=folder.name,
+                text=folder.name + " 📁",
                 callback_data=self.FOLDER_CB.new(
                     action="to_folder",
                     folder_id=folder.id,
