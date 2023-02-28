@@ -2,7 +2,9 @@ from aiogram.types import InlineKeyboardButton
 
 
 def get_folders_footer_ik(
-    back_callback_data: str, add_folder_callback_data: str
+    back_callback_data: str,
+    add_folder_callback_data: str,
+    delete_folder_callback_data: str,
 ) -> list:
     folders_footer_ik = [
         [
@@ -13,7 +15,7 @@ def get_folders_footer_ik(
         ],
         [
             InlineKeyboardButton(
-                text="Удалить текущую директорию ❌", callback_data="fdsfsd"
+                text="Удалить директорию ❌", callback_data=delete_folder_callback_data
             ),
         ],
         [

@@ -1,6 +1,6 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.callback_data import CallbackData
-from sqlalchemy import and_, select
+from sqlalchemy import and_, select, delete
 from sqlalchemy.exc import NoResultFound
 
 from database import session
@@ -38,7 +38,11 @@ class FolderService:
         return path
 
     def get_user_folders_kb(
-        self, user_id: int, folder_id: int = None, parent_id: int = None
+        self,
+        user_id: int,
+        folder_id: int = None,
+        parent_id: int = None,
+        with_footer: bool = True,
     ) -> InlineKeyboardMarkup:
         """Получение инлайн-кнопок с папками"""
 
@@ -50,26 +54,37 @@ class FolderService:
         try:
             folders = self.session.execute(stmt).fetchall()
             user_folders_kb = self.create_user_folders_kb(folders)
-            user_folders_kb.extend(
-                get_folders_footer_ik(
-                    back_callback_data=self.FOLDER_CB.new(
-                        action="to_folder",
-                        folder_id=str(parent_id),
-                        parent_id="None",
-                    ),
-                    add_folder_callback_data=self.FOLDER_CB.new(
-                        action="add_folder",
-                        folder_id="None",
-                        parent_id=str(folder_id),
-                    ),
+            if with_footer:
+                user_folders_kb.extend(
+                    get_folders_footer_ik(
+                        back_callback_data=self.FOLDER_CB.new(
+                            action="to_folder",
+                            folder_id=str(parent_id),
+                            parent_id="None",
+                        ),
+                        add_folder_callback_data=self.FOLDER_CB.new(
+                            action="add_folder",
+                            folder_id="None",
+                            parent_id=str(folder_id),
+                        ),
+                        delete_folder_callback_data=self.FOLDER_CB.new(
+                            action="delete_folder",
+                            folder_id="None",
+                            parent_id=str(folder_id),
+                        ),
+                    )
                 )
-            )
             user_folders_kb = InlineKeyboardMarkup(
                 row_width=4, inline_keyboard=user_folders_kb
             )
             return user_folders_kb
         except NoResultFound:
             pass
+
+    def delete_folder(self, folder_id: int):
+        stmt = delete(Folder).where(Folder.id == folder_id)
+        self.session.execute(stmt)
+        self.session.commit()
 
     def create_folder_path(
         self, user_folders: list[Folder], folder_id: int | None

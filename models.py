@@ -25,11 +25,6 @@ class User(Base):
     __tablename__ = "user"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(BigInteger, unique=True)
-    current_menu: Mapped[List[str]] = mapped_column(
-        "current_menu",
-        Enum("add_folder", name="menu_enum", create_type=False),
-        nullable=True
-    )
 
     folders: Mapped[List["Folder"]] = relationship(back_populates="user")
     files: Mapped[List["File"]] = relationship(back_populates="user")
