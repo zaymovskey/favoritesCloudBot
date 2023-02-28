@@ -42,14 +42,20 @@ class Folder(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("user.user_id"))
     user: Mapped["User"] = relationship(back_populates="folders")
 
-    files: Mapped[List["File"]] = relationship(back_populates="folder")
+    files: Mapped[List["File"]] = relationship(
+        cascade="all,delete", back_populates="folder"
+    )
 
     time_created: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
 
     parent_id = mapped_column(Integer, ForeignKey("folder.id"))
-    children = relationship("Folder", backref=backref("parent", remote_side=[id]))
+    children = relationship(
+        "Folder",
+        cascade="all,delete",
+        backref=backref("parent", remote_side=[id]),
+    )
 
     __table_args__ = (
         UniqueConstraint("user_id", "parent_id", "name", name="folders_unique"),
