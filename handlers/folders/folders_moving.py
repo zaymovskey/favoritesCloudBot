@@ -17,9 +17,9 @@ def get_user_folders_and_current_path(
     folder_service = FolderService()
 
     user_folders_kb = folder_service.get_user_folders_kb(
-        user_id,
-        folder_id,
-        parent_id,
+        user_id=user_id,
+        folder_id=folder_id,
+        parent_id=parent_id,
     )
 
     current_folder_path = folder_service.get_folder_path(user_id, folder_id)
@@ -32,7 +32,7 @@ async def start_handler(message: types.Message):
     UserService().add_user_if_not_exists(message.from_id)
 
     user_folders_kb, current_folder_path = get_user_folders_and_current_path(
-        message.from_id
+        user_id=message.from_id
     )
     await message.answer(text=current_folder_path, reply_markup=user_folders_kb)
 
@@ -42,9 +42,9 @@ async def go_to_folder_handler(
     callback_query: types.CallbackQuery, callback_data: dict
 ):
     user_folders_kb, current_folder_path = get_user_folders_and_current_path(
-        callback_query.from_user.id,
-        callback_data.get("folder_id"),
-        callback_data.get("parent_id"),
+        user_id=callback_query.from_user.id,
+        folder_id=callback_data.get("folder_id"),
+        parent_id=callback_data.get("parent_id"),
     )
 
     await bot.send_message(

@@ -18,7 +18,7 @@ async def set_delete_folder_state(
 ):
     folders_ik = FolderService().get_user_folders_kb(
         user_id=callback_query.from_user.id,
-        folder_id=callback_string_to_int_or_none(callback_data.get("parent_id")),
+        folder_id=callback_string_to_int_or_none(callback_data.get("folder_id")),
         with_footer=False,
     )
     await bot.send_message(
@@ -33,13 +33,13 @@ async def set_delete_folder_state(
 @dp.callback_query_handler(state=FolderState.delete_folder)
 async def delete_folder(callback_query: types.CallbackQuery, state: FSMContext):
     callback_data = callback_query.data.split(":")
-    folder_id = int(callback_data[2])
-    FolderService().delete_folder(folder_id)
+    deleting_folder_id = int(callback_data[2])
+    FolderService().delete_folder(deleting_folder_id)
     await state.finish()
-    parent_id = callback_string_to_int_or_none(callback_data[3])
+    folder_id = callback_string_to_int_or_none(callback_data[3])
 
     user_folders_kb, current_folder_path = get_user_folders_and_current_path(
-        callback_query.from_user.id, parent_id
+        user_id=callback_query.from_user.id, folder_id=folder_id
     )
 
     await bot.send_message(

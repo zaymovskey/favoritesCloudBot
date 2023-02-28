@@ -59,18 +59,21 @@ class FolderService:
                     get_folders_footer_ik(
                         back_callback_data=self.FOLDER_CB.new(
                             action="to_folder",
+                            # id родительской папки, чтобы перейти в нее как в обычную
                             folder_id=str(parent_id),
                             parent_id="None",
                         ),
                         add_folder_callback_data=self.FOLDER_CB.new(
                             action="add_folder",
-                            folder_id="None",
-                            parent_id=str(folder_id),
+                            # id текущей папки, чтобы потом занести ее в parent_id новой и показать содержимое текущей
+                            folder_id=str(folder_id),
+                            parent_id="None",
                         ),
                         delete_folder_callback_data=self.FOLDER_CB.new(
                             action="delete_folder",
-                            folder_id="None",
-                            parent_id=str(folder_id),
+                            # id текущей папки, чтобы после удаления показать нужную
+                            folder_id=str(folder_id),
+                            parent_id="None",
                         ),
                     )
                 )
