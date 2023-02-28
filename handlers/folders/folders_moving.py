@@ -1,6 +1,7 @@
 from loader import dp, bot
 from aiogram import types
 from services.folder_service import FolderService
+from services.user_service import UserService
 
 
 def callback_string_to_int_or_none(value) -> int | None:
@@ -28,6 +29,8 @@ def get_user_folders_and_current_path(
 
 @dp.message_handler(commands=["start"])
 async def start_handler(message: types.Message):
+    UserService().add_user_if_not_exists(message.from_id)
+
     user_folders_kb, current_folder_path = get_user_folders_and_current_path(
         message.from_id
     )

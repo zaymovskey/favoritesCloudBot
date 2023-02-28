@@ -28,10 +28,8 @@ class User(Base):
     current_menu: Mapped[List[str]] = mapped_column(
         "current_menu",
         Enum("add_folder", name="menu_enum", create_type=False),
-        nullable=True,
+        nullable=True
     )
-
-    current_folder_id: Mapped[int] = mapped_column(Integer, nullable=True)
 
     folders: Mapped[List["Folder"]] = relationship(back_populates="user")
     files: Mapped[List["File"]] = relationship(back_populates="user")

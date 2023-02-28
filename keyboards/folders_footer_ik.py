@@ -13,6 +13,11 @@ def get_folders_footer_ik(
         ],
         [
             InlineKeyboardButton(
+                text="Удалить текущую директорию ❌", callback_data="fdsfsd"
+            ),
+        ],
+        [
+            InlineKeyboardButton(
                 text="Файлы текущей директории 📋", callback_data="fdsaf"
             ),
         ],
