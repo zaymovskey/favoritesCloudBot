@@ -11,7 +11,7 @@ from states import FolderState
 
 
 @dp.callback_query_handler(FolderService.FOLDER_CB.filter(action="add_folder"))
-async def create_folder_handler(
+async def set_add_folder_state_handler(
     callback_query: types.CallbackQuery, callback_data: dict
 ):
     await bot.send_message(callback_query.from_user.id, text="Введите название папки")
@@ -21,7 +21,7 @@ async def create_folder_handler(
 
 
 @dp.message_handler(state=FolderState.add_folder)
-async def add_folder(message: types.Message, state: FSMContext):
+async def add_folder_handler(message: types.Message, state: FSMContext):
     data = await state.get_data()
     await state.finish()
 
